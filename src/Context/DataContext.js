@@ -1,3 +1,4 @@
+// DataContext.js
 import React, { createContext, useState, useEffect } from 'react';
 
 const DataContext = createContext();
@@ -11,7 +12,7 @@ const DataProvider = ({ children }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://fakestoreapi.com/products');
+        const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/products`);
 
         if (!response.ok) {
           console.error(`Error: ${response.status} - ${response.statusText}`);
@@ -30,6 +31,22 @@ const DataProvider = ({ children }) => {
     fetchData();
   }, []);
 
+  const fetchProductById = async (productId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/product/${productId}`);
+  
+      if (!response.ok) {
+        console.error(`Error: ${response.status} - ${response.statusText}`);
+        return null;
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching product by ID:', error);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const filteredResults = products.filter(product =>
       product.title.toLowerCase().includes(search.toLowerCase())
@@ -42,7 +59,7 @@ const DataProvider = ({ children }) => {
   };
 
   return (
-    <DataContext.Provider value={{ search, setSearch, products, searchResults, isLoading, updateSearchResults }}>
+    <DataContext.Provider value={{ search, setSearch, products, searchResults, isLoading, updateSearchResults, fetchProductById }}>
       {children}
     </DataContext.Provider>
   );

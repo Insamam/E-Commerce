@@ -5,14 +5,18 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom'
 import { DataProvider } from './Context/DataContext';
 
+import { AuthProvider } from './Context/AuthContext';
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <DataProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </DataProvider>
+    <AuthProvider>
+      <DataProvider>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </DataProvider>
+    </AuthProvider>
   </React.StrictMode>
 );
 

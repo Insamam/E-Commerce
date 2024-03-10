@@ -1,7 +1,48 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link , useNavigate} from 'react-router-dom';
+import { AuthContext } from '../Context/AuthContext';
 
 const Login = () => {
+
+  const { handleSetLoggedIn } = useContext(AuthContext);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = (e)  => {
+    e.preventDefault();
+    login();
+  }
+  
+  const login = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_SERVER_URL}/api/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: email, password: password }),
+      });
+  
+      if (response.status === 200) {
+        const data = await response.json();
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("userName", data.user.fullName);
+        handleSetLoggedIn(true, data.user);
+        navigate("/");
+      } else {
+        // Handle login error
+        console.error("Login failed");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+  };
+  
+  
+
+
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -10,7 +51,7 @@ const Login = () => {
             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
               Sign in to your account
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
+            <form className="space-y-4 md:space-y-6"  onSubmit={(e) => handleSubmit(e)}>
               <div>
                 <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                   Your email
@@ -21,6 +62,8 @@ const Login = () => {
                   id="email"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="name@company.com"
+                  
+                  onChange={(e) => setEmail(e.target.value)}
                   required=""
                 />
               </div>
@@ -34,6 +77,8 @@ const Login = () => {
                   id="password"
                   placeholder="••••••••"
                   className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  
+                  onChange={(e) => setPassword(e.target.value)}
                   required=""
                 />
               </div>
@@ -54,9 +99,6 @@ const Login = () => {
                     </label>
                   </div>
                 </div>
-                {/* <a href="#" className="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">
-                  Forgot password?
-                </a> */}
               </div>
               <button
                 type="submit"
@@ -65,10 +107,10 @@ const Login = () => {
                 Sign in
               </button>
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Don’t have an account yet?{' '}
-                <Link to='/register'><div className="font-medium text-primary-600 hover:underline dark:text-primary-500">
+                Don't have an account yet?{' '}
+                <Link to="/register" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
                   Sign up
-                </div></Link>
+                </Link>
               </p>
             </form>
           </div>

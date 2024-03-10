@@ -77,7 +77,7 @@ const Category = () => {
 
       <div className="flex flex-wrap -m-4">
         {filteredProducts.map((product) => (
-          <ProductCard key={product.id} productDetails={product} />
+          <ProductCard key={product._id} productDetails={product} />
         ))}
       </div>
     </>

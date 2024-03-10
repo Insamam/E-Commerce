@@ -13,6 +13,7 @@ import { DataProvider } from './Context/DataContext';
 import ProductCardDetails from './Components/ProductCardDetails';
 import appStore from './Redux/appStore';
 
+
 const Home = lazy(() => import('./Components/Home'));
 const Error404 = lazy(() => import('./Components/Error404'));
 const About = lazy(() => import('./Components/About'));

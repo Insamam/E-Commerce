@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { DataContext } from '../Context/DataContext';
 import Loading from './Loading';
@@ -6,11 +6,32 @@ import { useDispatch } from 'react-redux';
 import { addItem } from '../Redux/cartSlice';
 
 const ProductCardDetails = () => {
-  const { products } = useContext(DataContext);
+  const { fetchProductById } = useContext(DataContext);
   const { id } = useParams();
+  
   const dispatch = useDispatch();
+  const [product, setProduct] = useState(null);
 
-  const product = products.find((product) => product.id.toString() === id);
+  useEffect(() => {
+    const fetchProduct = async () => {
+      if (!id) {
+        console.error('Product ID is undefined');
+        return;
+      }
+
+      const productData = await fetchProductById(id);
+
+      // Handle the fetched product data
+      if (productData) {
+        setProduct(productData);
+      } else {
+        // Handle the case where the product data cannot be fetched
+        console.error('Product not found');
+      }
+    };
+
+    fetchProduct();
+  }, [id, fetchProductById]);
 
   if (!product) {
     return <Loading />;
